@@ -120,3 +120,53 @@ WHERE id = "ff80808177";
 1. 클래스에는 매개변수가 없는 생성자, `NoArgsConstructor` 가 필요.
 2. `Getter`/ `Setter` 가 필요.
 3. 기본키(PK)를 지정.
+
+<br>
+
+## 7. 서비스 개발
+### 생성(Create), 검색(Retrieve), 수정(Update), 삭제(Delete) API 개발
+
+- 구현 과정 : 퍼시스턴스 -> 서비스 -> 컨트롤
+
+<br>
+
+### Create Todo 구현
+- 퍼시스턴스(PS) 구현 : TodoRepository 사용 (JpaRepository를 상속하므로 JpaRepository가 제공하는 메서드를 사용할수 있음)  
+
+- 서비스 구현 : create 메서드로 구현 (크게 세단계로 구성)
+  - `검증` : 넘어온 엔티티가 유효한지 검사하는 로직
+  - `save()` : 엔티티를 데이터베이스에 저장하고 로그를 남김.
+  - `findByUserId()` : 저장된 엔티티를 포함하는 새 리스트를 리턴.  
+  
+- 컨트롤러 구현 : 컨트롤러는 사용자에게서 `TodoDTO`를 요청 바디 넘겨받고 이를 `TodoEntity` 로 변환해 저장.  
+또 서비스에서 구현해놓은 create 메서드가 리턴하는 `TodoEntity`를 `TodoDTO`로 변환해 리턴  
+
+![image](https://user-images.githubusercontent.com/87354210/203251362-714d01d5-d2f0-4fbb-9f99-09d320a3c7c8.png)
+
+<br>
+
+### Retrieve Todo 구현
+- 퍼시스턴스(PS) 구현 : TodoRepository 사용
+
+- 서비스 구현 : `findByUserId()` 메서드 사용하여 retrieve 메서드 작성
+
+- 컨트롤러 구현 : `TodoController` 에 새 `GET` 메서드를 만들어주고 메서드 내부는 서비스 코드를 이용해 작성
+
+<br>
+
+### Update Todo 구현
+- 퍼시스턴스(PS) 구현 : TodoRepository 사용, `save()`, `findByUserId()` 메서드 사용
+
+- 서비스 구현 : update() 메서드 구현  
+ (`Optional`과 `Lambda` 사용) 
+  
+- 컨트롤러 구현 :  `TodoController` 에 새 `PUT` 메서드를 만들어주고 메서드 내부는 서비스 코드를 이용해 작성
+
+<br>
+
+### Delete Todo 구현
+- 퍼시스턴스(PS) 구현 : TodoRepository 사용, `delete()`, `findByUserId()` 메서드 사용
+
+- 서비스 구현 : delete() 메서드 구현   
+  
+- 컨트롤러 구현 :  `TodoController` 에 새 `DELETE` 메서드를 만들어주고 메서드 내부는 서비스 코드를 이용해 작성
