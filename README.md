@@ -309,3 +309,21 @@ ex. HTTP 요청 헤더의 Authorization 부분에 아이디와 비밀번호를 �
   
   따라서 `SecurityFilterChain` 을 Bean으로 등록하면서 시큐리티 설정을 해주어야함.
   
+  <br>
+  
+## 9. 인증 프론트엔드 통합
+### 서버-사이드 라우팅
+![image](https://user-images.githubusercontent.com/87354210/206144642-b7e384fc-9fb3-46f5-ad7e-9871d3d6ed12.png)
+- 서버는 login 경로를 보고 login.html 페이지를 반환 -> 브라우저는 `login.html` 을 렌더링 -> 웹 페이지 새로고침
+
+<br>
+
+### 클라이언트-사이드 라우팅
+![image](https://user-images.githubusercontent.com/87354210/206145561-9dc1b51b-e9b1-4efe-9ea4-64c6ba555f82.png)
+- `http://localhost:3000` 에 접속하면 프론트엔드 서버가 리액트 애플리케이션 리턴
+- 이 애플리케이션이 필요한 모든 리소스를 갖고 있음.
+- 모든 것은 클라이언트 사이드, 즉 브라우저 내부에서 실행되고 서버로는 아무것도 요청하지 않음.
+- 라이브러리 필요 : 우리 프로젝트에서는 `react-router-dom` 사용
+
+
+  
