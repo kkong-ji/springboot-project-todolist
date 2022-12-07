@@ -247,6 +247,65 @@ ex. HTTP 요청 헤더의 Authorization 부분에 아이디와 비밀번호를 �
 ### 스프링 시큐리티와 서블릿 필터
 - 위의 그림에서처럼 API가 실행될 때마다 사용자를 인증해주는 부분을 구현해야 함.
 - 스프링 시큐리티의 도움을 받아 구현.  
-- 스프링 시큐리티 : 서블릿 필터의 집합.  
-- 서블릿 필터 : 서블릿 실행 전에 실행되는 클래스.  
+- `스프링 시큐리티` : 서블릿 필터의 집합.  
+- `서블릿 필터` : 서블릿 실행 전에 실행되는 클래스.  
 (즉, 디스패처 서블릿이 실행되기 전에 항상 실행됨.)
+
+![image](https://user-images.githubusercontent.com/87354210/206127089-15588d51-99a5-48a6-b3df-c43aad3d0d52.png)
+
+- 서블릿 필터는 말 그대로 구현된 로직에 따라 원하지 않는 HTTP 요청을 걸러낼 수 있음.
+
+<br>
+
+### 서블릿 필터는 한 개가 아닐수도 있음
+![image](https://user-images.githubusercontent.com/87354210/206129887-908909b1-d1a9-4c8a-ac71-531d3e93ecc3.png)
+
+- 기능에 따라 다른 서블릿 필터를 작성할 수 있음.
+- `FilterChain` 을 이용해 연쇄적으로 순서대로 실행 가능.
+- 스프링 시큐리티를 이용하면 `FilterChainProxy` 라는 필터를 서블릿 필터에 끼워줌.
+  - 이 필터들이 스프링이 관리하는 스프링 빈 필터
+
+<br>
+
+### 스프링 시큐리티 설정
+- 스프링 필터를 사용하려면?
+  1. 서블릿 필터를 구현해야함.
+  2. 서블릿 컨테이너에 이 서블릿 필터를 사용하려고 알려주어야함.
+  
+  <br>
+  
+  ```java
+    @Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		// http 시큐리티 빌더
+		http.csrf().disable(); // csrf는 현재 사용하지 않으므로 disable
+		http.cors() // WebMvcConfig에서 이미 설정했으므로 기본 cors 설정
+			.and()
+			.httpBasic()	// token을 사용하므로 basic 인증 disable
+				.disable()
+			.sessionManagement()	// session 기반이 아님을 선언
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			.and()
+			.authorizeRequests()	// /와 /auth/** 경로는 인증 안해도 됨
+				.antMatchers("/", "/auth/**").permitAll()
+			.anyRequest()	// /와 /auth/** 이외의 모든 경로는 인증해야 됨
+				.authenticated();
+		
+			
+			// filter 등록
+			// 매 요청마다
+			// CorsFilter 실행한 후에
+			// jwtAuthenticationFilter 실행한다.
+			http.addFilterAfter(
+					jwtAuthenticationFilter, 
+					CorsFilter.class);
+			
+			return http.build();
+	};
+  
+  ```
+  
+  > 📌 spring security 5.7이상에서 더 이상 `WebSecurityConfigurerAdapter` 어댑터를 지원하지 않게 되었음. 
+  
+  따라서 `SecurityFilterChain` 을 Bean으로 등록하면서 시큐리티 설정을 해주어야함.
+  
